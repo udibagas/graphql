@@ -8,16 +8,9 @@ const { ObjectId } = require("mongodb");
 const resolvers = {
   Query: {
     hello: () => "world",
-
-    products: async () => {
-      const products = await Product.findAll();
-      return products.toArray();
-    },
-
-    orders: async () => {
-      const orders = await Order.findAll();
-      return orders.toArray();
-    },
+    products: () => Product.findAll(),
+    orders: () => Order.findAll(),
+    order: (_, { id }) => Order.findById(id),
   },
 
   Mutation: {
@@ -54,11 +47,13 @@ const resolvers = {
 
     async createOrder(_, { data }, { auth }) {
       const user = auth();
+      const { productId, ...payload } = data;
 
       const res = await Order.create({
-        ...data,
+        ...payload,
         date: new Date(),
         customerId: new ObjectId(String(user.id)),
+        productId: new ObjectId(String(productId)),
         status: "unpaid",
       });
 

@@ -3,6 +3,7 @@ const typeDefs = `#graphql
     hello: String
     products: [Product]
     orders: [Order]
+    order(id: String): Order
   }
 
   type User {
@@ -26,8 +27,8 @@ const typeDefs = `#graphql
     date: Date
     customerId: String
     productId: String
-    # customer: User
-    # product: Product
+    customer: User
+    product: Product
     qty: Int
     amount: Int
     status: PaymentStatus

@@ -10,14 +10,85 @@ class Order {
     return this.collection().insertOne(payload);
   }
 
-  static findAll() {
-    return this.collection().find();
+  static async findAll() {
+    const agg = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "customerId",
+          foreignField: "_id",
+          as: "customer",
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      {
+        $unwind: {
+          path: "$customer",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: "$product",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ];
+
+    const res = await this.collection().aggregate(agg);
+    return await res.toArray();
   }
 
-  static findById(id) {
-    return this.collection().findOne({
-      _id: new ObjectId(String(id)),
-    });
+  static async findById(id) {
+    // return this.collection().findOne({
+    //   _id: new ObjectId(String(id)),
+    // });
+
+    const agg = [
+      {
+        $match: {
+          _id: new ObjectId(String(id)),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "customerId",
+          foreignField: "_id",
+          as: "customer",
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      {
+        $unwind: {
+          path: "$customer",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: "$product",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ];
+
+    const res = await this.collection().aggregate(agg);
+    return (await res.toArray())[0];
   }
 }
 

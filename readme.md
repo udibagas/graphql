@@ -1,0 +1,11 @@
+- MongoDB Transaction:
+  - https://www.mongodb.com/docs/drivers/node/current/usage-examples/transaction-core/
+- Redis:
+  - https://redis.io/
+  - https://app.redislabs.com/
+  - https://www.npmjs.com/package/ioredis/v/1.0.11
+  - Command:
+    - KEYS (KEYS {key})
+    - GET (GET {key})
+    - SET (SET {key} "VALUE")
+    - DEL (DEL {key})

@@ -10,8 +10,9 @@ class Product {
     return this.collection().insertOne(payload);
   }
 
-  static findAll() {
-    return this.collection().find();
+  static async findAll() {
+    const res = this.collection().find();
+    return res.toArray();
   }
 
   static findById(id) {
