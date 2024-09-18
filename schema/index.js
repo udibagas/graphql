@@ -39,12 +39,12 @@ const typeDefs = `#graphql
     price: Int!
     stock: Int!
   }
-  
+
   type Mutation {
     register(name: String!, email: String!, password: String!): User
     login(email: String!, password: String!): Token
-    createProduct(content: ProductInput): Product
-    createOrder(content: OrderInput!): Order
+    createProduct(data: ProductInput): Product
+    createOrder(data: OrderInput!): Order
   }
 
   type Token {
