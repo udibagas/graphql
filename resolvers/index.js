@@ -3,10 +3,21 @@ const { generateToken } = require("../helpers/auth");
 const User = require("../models/user");
 const Product = require("../models/product");
 const Order = require("../models/order");
+const { ObjectId } = require("mongodb");
 
 const resolvers = {
   Query: {
     hello: () => "world",
+
+    products: async () => {
+      const products = await Product.findAll();
+      return products.toArray();
+    },
+
+    orders: async () => {
+      const orders = await Order.findAll();
+      return orders.toArray();
+    },
   },
 
   Mutation: {
@@ -26,6 +37,7 @@ const resolvers = {
       }
 
       const token = generateToken({
+        id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -34,13 +46,18 @@ const resolvers = {
       return { token };
     },
 
-    async createProduct(_, { data }) {
+    async createProduct(_, { data }, contextValue) {
+      contextValue.auth();
       const res = await Product.create(data);
       return Product.findById(res.insertedId);
     },
 
-    async createOrder(_, { data }) {
-      const res = await Order.create(data);
+    async createOrder(_, { data }, { auth }) {
+      const user = auth();
+      const res = await Order.create({
+        ...data,
+        userId: new ObjectId(String(user.id)),
+      });
       return Order.findById(res.insertedId);
     },
   },

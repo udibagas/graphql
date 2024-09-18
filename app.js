@@ -13,10 +13,7 @@ const server = new ApolloServer({
     listen: { port: 4000 },
     context: ({ req, res }) => {
       const { authorization } = req.headers;
-
-      return {
-        auth: () => auth(authorization),
-      };
+      return { auth: () => auth(authorization) };
     },
   });
   console.log(`🚀 Server listening at: ${url}`);

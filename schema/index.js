@@ -1,6 +1,8 @@
 const typeDefs = `#graphql
   type Query {
     hello: String
+    products: [Product]
+    orders: [Order]
   }
 
   type User {
