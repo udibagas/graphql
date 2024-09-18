@@ -54,10 +54,14 @@ const resolvers = {
 
     async createOrder(_, { data }, { auth }) {
       const user = auth();
+
       const res = await Order.create({
         ...data,
-        userId: new ObjectId(String(user.id)),
+        date: new Date(),
+        customerId: new ObjectId(String(user.id)),
+        status: "unpaid",
       });
+
       return Order.findById(res.insertedId);
     },
   },

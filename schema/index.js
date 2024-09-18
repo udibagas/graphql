@@ -19,12 +19,15 @@ const typeDefs = `#graphql
     stock: Int
   }
 
+  scalar Date 
+
   type Order {
     _id: ID
+    date: Date
     customerId: String
     productId: String
-    customer: User
-    product: Product
+    # customer: User
+    # product: Product
     qty: Int
     amount: Int
     status: PaymentStatus
