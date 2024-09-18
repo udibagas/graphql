@@ -52,6 +52,7 @@ const typeDefs = `#graphql
     login(email: String!, password: String!): Token
     createProduct(data: ProductInput): Product
     createOrder(data: OrderInput!): Order
+    payOrder(id: String): Order
   }
 
   type Token {

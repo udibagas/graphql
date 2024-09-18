@@ -4,14 +4,41 @@ const User = require("../models/user");
 const Product = require("../models/product");
 const Order = require("../models/order");
 const { ObjectId } = require("mongodb");
+const Redis = require("ioredis");
+const redis = new Redis();
+// const { REDIS_HOST, REDIS_PORT, REDIS_PASS, REDIS_DB } = process.env;
+// const redis = new Redis({
+//   port: Number(REDIS_PORT), // Redis port
+//   host: REDIS_HOST, // Redis host
+//   password: REDIS_PASS,
+//   db: 0,
+// });
 
 const resolvers = {
   Query: {
     hello: () => "world",
 
-    products: (parent, args, { auth }) => {
+    products: async (parent, args, { auth }) => {
       auth();
-      return Product.findAll();
+
+      // 1. Check di redis apakah ada cache yg tersimpan
+      const cache = await redis.get("products");
+
+      // 2. Kalau ada return data yang ada di cache
+      if (cache) {
+        console.log("Ambil data dari cache");
+        return JSON.parse(cache);
+      }
+
+      // 3. Kalau ga ada ambil dari database,
+      const products = await Product.findAll();
+
+      // 4. Simpan datanya di cache
+      await redis.set("products", JSON.stringify(products));
+
+      // 5. Return data dari database
+      console.log("Ambil data dari database");
+      return products;
     },
 
     orders: (parent, args, { auth }) => {
@@ -54,6 +81,8 @@ const resolvers = {
     async createProduct(_, { data }, contextValue) {
       contextValue.auth();
       const res = await Product.create(data);
+      // cache invalidation
+      await redis.del("products");
       return Product.findById(res.insertedId);
     },
 
@@ -71,6 +100,11 @@ const resolvers = {
       });
 
       return Order.findById(res.insertedId);
+    },
+
+    async payOrder(_, { id }, { auth }) {
+      auth();
+      return Order.pay(id);
     },
   },
 };
