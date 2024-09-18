@@ -12,6 +12,12 @@ class Order {
   static findAll() {
     return this.collection().find();
   }
+
+  static findById(id) {
+    return this.collection().findOne({
+      _id: new ObjectId(String(id)),
+    });
+  }
 }
 
 module.exports = Order;
