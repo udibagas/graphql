@@ -32,6 +32,7 @@ const typeDefs = `#graphql
     qty: Int
     amount: Int
     status: PaymentStatus
+    paidAt: Date
   }
 
   input OrderInput {

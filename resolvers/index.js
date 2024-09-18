@@ -8,9 +8,21 @@ const { ObjectId } = require("mongodb");
 const resolvers = {
   Query: {
     hello: () => "world",
-    products: () => Product.findAll(),
-    orders: () => Order.findAll(),
-    order: (_, { id }) => Order.findById(id),
+
+    products: (parent, args, { auth }) => {
+      auth();
+      return Product.findAll();
+    },
+
+    orders: (parent, args, { auth }) => {
+      auth();
+      return Order.findAll();
+    },
+
+    order: (_, { id }, { auth }) => {
+      auth();
+      return Order.findById(id);
+    },
   },
 
   Mutation: {
@@ -55,6 +67,7 @@ const resolvers = {
         customerId: new ObjectId(String(user.id)),
         productId: new ObjectId(String(productId)),
         status: "unpaid",
+        paidAt: null,
       });
 
       return Order.findById(res.insertedId);
